@@ -45,4 +45,13 @@ dependencies {
 
 
     implementation 'com.airbnb.android:lottie:6.3.0'
+
+    //Glide
+    implementation 'com.github.bumptech.glide:glide:4.15.1'
+    // Skip this if you don't want to use integration libraries or configure Glide.
+    kapt 'com.github.bumptech.glide:compiler:4.15.1'
+    implementation ('com.github.bumptech.glide:recyclerview-integration:4.15.1') {
+        // Excludes the support library because it's already included by Glide.
+        transitive = false
+    }
 }

@@ -1,0 +1,86 @@
+package com.avcoding.avmediapicker.ui.adapter
+
+import android.content.Context
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.RecyclerView
+import com.avcoding.avmediapicker.databinding.AdapterMediaBinding
+import com.avcoding.avmediapicker.model.Img
+import com.avcoding.avmediapicker.utils.MediaDiffUtils
+import com.avcoding.avmediapicker.utils.WIDTH
+import com.avcoding.avmediapicker.utils.hide
+import com.avcoding.avmediapicker.utils.show
+import com.bumptech.glide.Glide
+import com.bumptech.glide.ListPreloader
+import com.bumptech.glide.RequestManager
+import com.bumptech.glide.load.DecodeFormat
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.util.FixedPreloadSizeProvider
+
+class MediaAdapter(private val context: Context) :
+    RecyclerView.Adapter<MediaAdapter.ItemViewHolder>() {
+
+    private val glide: RequestManager
+    private val options: RequestOptions
+    private var sizeProvider: ListPreloader.PreloadSizeProvider<Img>
+    private val MARGIN = 4
+
+    init {
+        val size: Int = WIDTH / 3 - MARGIN / 2
+        options = RequestOptions().override(size - 50)
+            .format(DecodeFormat.PREFER_RGB_565)
+            .centerCrop()
+            .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+        glide = Glide.with(context)
+        sizeProvider = FixedPreloadSizeProvider(size, size)
+    }
+
+    var oldList = arrayListOf<Img>()
+
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
+        val layoutInflater = LayoutInflater.from(parent.context)
+        val view = AdapterMediaBinding.inflate(layoutInflater, parent, false)
+        return ItemViewHolder(view)
+    }
+
+    override fun getItemCount(): Int {
+        return oldList.size
+    }
+
+    override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
+        holder.bind(oldList[position])
+    }
+
+
+    fun updateList(newList : ArrayList<Img>){
+        val diffResult = DiffUtil.calculateDiff(
+            MediaDiffUtils(oldList, newList),
+            true
+        )
+        oldList = ArrayList(newList)
+        diffResult.dispatchUpdatesTo(this)
+    }
+    inner class ItemViewHolder(private val mainImageBinding: AdapterMediaBinding) :
+        RecyclerView.ViewHolder(mainImageBinding.root) {
+        fun bind(image: Img) {
+           // mainImageBinding.root.setOnClickListener(this)
+           // mainImageBinding.root.setOnLongClickListener(this)
+            try {
+                glide.asBitmap()
+                    .load(image.contentUrl)
+                    .apply(options)
+                    .into(mainImageBinding.ivImage)
+                if (image.mediaType == 1) {
+                    mainImageBinding.ivIsVideo.hide()
+                } else if (image.mediaType == 3) {
+                    mainImageBinding.ivIsVideo.show()
+                }
+            }catch (e:Exception){
+                e.printStackTrace()
+            }
+        }
+    }
+}

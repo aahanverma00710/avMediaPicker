@@ -1,13 +1,22 @@
 package com.avcoding.avmediapicker.utils
 
+import android.app.Activity
 import android.content.Intent
+import android.content.res.Resources
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
 import android.provider.MediaStore
+import android.util.DisplayMetrics
 import android.view.View
+import android.view.WindowManager
+import androidx.core.view.WindowCompat
+import com.avcoding.avmediapicker.R
 import com.avcoding.avmediapicker.model.MediaMode
 import com.google.android.material.tabs.TabLayout
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 internal const val TAG = "AV Media logs"
 
@@ -33,6 +42,8 @@ internal const val IMAGE_SELECTION = (MediaStore.Files.FileColumns.MEDIA_TYPE + 
 internal val IMAGE_VIDEO_URI = MediaStore.Files.getContentUri("external")!!
 internal const val IMAGE_VIDEO_ORDER_BY = MediaStore.Images.Media.DATE_MODIFIED + " DESC"
 
+
+var WIDTH = 0
 const val ARG_PARAM_AV_MEDIA = "av_media"
 internal const val ARG_PARAM_AV_MEDIA_KEY = "param_av_media_key"
 
@@ -59,17 +70,65 @@ inline fun <reified T : Parcelable> Bundle.parcelable(key: String): T? = when {
 }
 
 
-fun TabLayout.customTabs(options:MediaMode){
-    when(options){
+fun TabLayout.customTabs(options: MediaMode) {
+    when (options) {
         MediaMode.All -> {
             addTab(this.newTab().setText("Images"))
             addTab(this.newTab().setText("Video"))
         }
+
         MediaMode.Picture -> {
             Unit
         }
+
         MediaMode.Video -> {
             Unit
         }
     }
+}
+
+fun MediaMode.getCount(): Int {
+    return when (this) {
+        MediaMode.All -> {
+            2
+        }
+
+        else -> {
+            1
+        }
+    }
+}
+
+fun Resources.getDateDifference(calendar: Calendar): String {
+    val d = calendar.time
+    val lastMonth =
+        Calendar.getInstance().apply { add(Calendar.DAY_OF_MONTH, -Calendar.DAY_OF_MONTH) }
+    val lastWeek = Calendar.getInstance().apply { add(Calendar.DAY_OF_MONTH, -7) }
+    val recent = Calendar.getInstance().apply { add(Calendar.DAY_OF_MONTH, -2) }
+    return when {
+        calendar.before(lastMonth) -> SimpleDateFormat("MMMM", Locale.getDefault()).format(d)
+        calendar.after(lastMonth) && calendar.before(lastWeek) -> "Last Month"
+        calendar.after(lastWeek) && calendar.before(recent) -> "Last Week"
+        else -> "Recent"
+    }
+}
+
+fun Activity.setupScreen() {
+    WindowCompat.setDecorFitsSystemWindows(window, false)
+    /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        window.attributes.layoutInDisplayCutoutMode =
+            WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+    }*/
+    getScreenSize()
+}
+
+fun Activity.getScreenSize() {
+    WIDTH = DisplayMetrics().apply {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            display?.getRealMetrics(this)
+        } else {
+            @Suppress("DEPRECATION")
+            windowManager.defaultDisplay.getMetrics(this)
+        }
+    }.widthPixels
 }

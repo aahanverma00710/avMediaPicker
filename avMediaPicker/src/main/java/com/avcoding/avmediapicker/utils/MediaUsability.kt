@@ -4,13 +4,12 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.avcoding.avmediapicker.model.MediaSelectionOptions
-import com.avcoding.avmediapicker.ui.AvMediaPickerFragment
+import com.avcoding.avmediapicker.ui.fragments.AvMediaPickerFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 open class AvMediaEventCallback {

@@ -8,10 +8,26 @@ import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import kotlin.collections.ArrayList
 
+
+@SuppressLint("ParcelCreator")
+@Parcelize
+data class Img(
+    var headerDate: String = "",
+    var contentUrl: Uri = Uri.EMPTY,
+    var scrollerDate: String = "",
+    var mediaType: Int = 1
+) : Parcelable {
+    @IgnoredOnParcel
+    var selected = false
+
+    @IgnoredOnParcel
+    var position = 0
+}
+
 @Keep
 @Parcelize
 data class MediaSelectionOptions(
-    val mediaMode: MediaMode = MediaMode.All,
+    var mediaMode: MediaMode = MediaMode.All,
     val selectionCount: Int = 1,
     var preSelectedUrls: ArrayList<Uri> = ArrayList(),
     var videoOptions: MediaVideoOptions = MediaVideoOptions()
@@ -28,3 +44,8 @@ class MediaVideoOptions : Parcelable {
 enum class MediaMode : Parcelable {
     All, Picture, Video
 }
+
+internal class ModelList(
+    var list: ArrayList<Img> = ArrayList(),
+    var selection: ArrayList<Img> = ArrayList()
+)

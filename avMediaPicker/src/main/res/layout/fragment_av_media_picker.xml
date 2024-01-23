@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/clRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include
+        android:id="@+id/lNoPermission"
+        layout="@layout/layout_no_permission_granted"/>
+
+    <include
+        android:id="@+id/lAllPermissionGranted"
+        layout="@layout/layout_av_media"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

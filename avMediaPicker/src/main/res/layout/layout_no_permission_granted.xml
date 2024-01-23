@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:id="@+id/clRoot"
+    android:visibility="gone"
+    tools:visibility="visible"
+    android:layout_height="match_parent">
+
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent=".6" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent=".1" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/lottieNoPermission"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/gl1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/gl2"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_rawRes="@raw/no_permission_animation" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="15dp"
+        android:layout_marginTop="5dp"
+        android:gravity="center"
+        android:text="To enhance your experience we needs access to your photos and videos. Granting permission ensures seamless functionality. Your privacy is our priority, and we will never misuse your media.\nTap 'Allow' to proceed or 'Deny' to restrict access."
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/gl1" />
+
+    <Button
+        android:id="@+id/btnAllow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/button_allow_bg"
+        android:minWidth="100dp"
+        android:text="Allow"
+        android:paddingVertical="10dp"
+        android:paddingHorizontal="20dp"
+        android:textAllCaps="true"
+        app:layout_constraintEnd_toEndOf="@+id/textView"
+        app:layout_constraintStart_toStartOf="@+id/textView"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
+</androidx.constraintlayout.widget.ConstraintLayout>

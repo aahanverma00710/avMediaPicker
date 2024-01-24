@@ -12,7 +12,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
       //  val tv = findViewById<FrameLayout>(R.id.tv)
-        val options =  MediaSelectionOptions()
+        val options =  MediaSelectionOptions(selectionCount =  2)
         selectMedia(R.id.tv,options){
 
         }

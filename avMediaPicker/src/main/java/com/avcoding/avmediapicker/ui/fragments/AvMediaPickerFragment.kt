@@ -31,11 +31,10 @@ class AvMediaPickerFragment(private val resultCallback: ((AvMediaEventCallback.R
 
     private lateinit var vpAdapter: MediaSelectionViewPager
 
-    private var scope = CoroutineScope(Dispatchers.IO)
 
     private var permReqLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
-            if (!permissions.all { it.value }) {
+            if (permissions.all { it.value }) {
                 _binding.lNoPermission.clRoot.hide()
                 setUpUI()
             } else {

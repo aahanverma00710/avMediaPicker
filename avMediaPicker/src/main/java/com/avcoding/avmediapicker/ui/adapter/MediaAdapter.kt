@@ -87,13 +87,19 @@ class MediaAdapter(private val context: Context, private val mediaOptions: Media
     }
 
 
-    fun updateList(newList: ArrayList<Img>) {
-        val diffResult = DiffUtil.calculateDiff(
+    fun updateList(newList: ArrayList<Img>,position: Int) {
+      /*  val diffResult = DiffUtil.calculateDiff(
             MediaDiffUtils(oldList, newList),
             true
         )
         oldList = ArrayList(newList)
-        diffResult.dispatchUpdatesTo(this)
+        diffResult.dispatchUpdatesTo(this)*/
+        oldList = ArrayList(newList)
+        if (position == -1){
+            notifyDataSetChanged()
+        }else{
+            notifyItemChanged(position)
+        }
     }
 
     inner class ItemViewHolder(private val mainImageBinding: AdapterMediaBinding) :

@@ -86,7 +86,7 @@ class MediaSelectionFragment : Fragment() {
             if (::mediaAdapter.isInitialized) {
                 requireActivity().runOnUiThread {
                     mediaList.addAll(media.list)
-                    mediaAdapter.updateList(mediaList)
+                    mediaAdapter.updateList(mediaList,-1)
                 }
 
             }
@@ -96,7 +96,7 @@ class MediaSelectionFragment : Fragment() {
     private fun setUpAdapter() {
         mediaAdapter = MediaAdapter(requireActivity(),options){ callback ->
             mediaList.updateFlaggedStatus(callback.position,!callback.selected)
-            mediaAdapter.updateList(mediaList)
+            mediaAdapter.updateList(mediaList,callback.position)
         }
         val mLayoutManager = GridLayoutManager(requireActivity(), 3)
         mLayoutManager.orientation =  RecyclerView.VERTICAL

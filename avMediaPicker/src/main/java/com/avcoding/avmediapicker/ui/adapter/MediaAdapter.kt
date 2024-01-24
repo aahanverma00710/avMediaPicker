@@ -25,7 +25,11 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.util.FixedPreloadSizeProvider
 
-class MediaAdapter(private val context: Context, private val mediaOptions: MediaSelectionOptions,val callback:(Img) ->Unit) :
+class MediaAdapter(
+    private val context: Context,
+    private val mediaOptions: MediaSelectionOptions,
+    val callback: (Img) -> Unit
+) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
@@ -87,17 +91,16 @@ class MediaAdapter(private val context: Context, private val mediaOptions: Media
     }
 
 
-    fun updateList(newList: ArrayList<Img>,position: Int) {
-      /*  val diffResult = DiffUtil.calculateDiff(
-            MediaDiffUtils(oldList, newList),
-            true
-        )
-        oldList = ArrayList(newList)
-        diffResult.dispatchUpdatesTo(this)*/
-        oldList = ArrayList(newList)
-        if (position == -1){
-            notifyDataSetChanged()
-        }else{
+    fun updateList(newList: ArrayList<Img>, position: Int) {
+        if (position == -1) {
+            val diffResult = DiffUtil.calculateDiff(
+                MediaDiffUtils(oldList, newList),
+                true
+            )
+            oldList = ArrayList(newList)
+            diffResult.dispatchUpdatesTo(this)
+        } else {
+            oldList = ArrayList(newList)
             notifyItemChanged(position)
         }
     }
@@ -105,7 +108,7 @@ class MediaAdapter(private val context: Context, private val mediaOptions: Media
     inner class ItemViewHolder(private val mainImageBinding: AdapterMediaBinding) :
         RecyclerView.ViewHolder(mainImageBinding.root), View.OnClickListener {
         fun bind(image: Img) {
-             mainImageBinding.root.setOnClickListener(this)
+            mainImageBinding.root.setOnClickListener(this)
             // mainImageBinding.root.setOnLongClickListener(this)
             //  mainImageBinding.mcvPreview.layoutParams = layoutParams
             try {
@@ -128,9 +131,9 @@ class MediaAdapter(private val context: Context, private val mediaOptions: Media
                 mainImageBinding.ivSelection.hide()
             }
 
-            if (image.selected){
+            if (image.selected) {
                 mainImageBinding.ivSelection.setImageResource(R.drawable.baseline_check_circle_24)
-            }else{
+            } else {
                 mainImageBinding.ivSelection.setImageResource(R.drawable.baseline_radio_button_unchecked_24)
             }
         }

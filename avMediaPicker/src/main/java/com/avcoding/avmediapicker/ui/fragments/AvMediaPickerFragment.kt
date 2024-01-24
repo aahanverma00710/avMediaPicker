@@ -1,15 +1,22 @@
 package com.avcoding.avmediapicker.ui.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.avcoding.avmediapicker.databinding.FragmentAvMediaPickerBinding
 import com.avcoding.avmediapicker.helper.permissionsFilter
 import com.avcoding.avmediapicker.model.MediaMode
 import com.avcoding.avmediapicker.model.MediaSelectionOptions
+import com.avcoding.avmediapicker.ui.MediaViewModel
 import com.avcoding.avmediapicker.ui.adapter.MediaSelectionViewPager
 import com.avcoding.avmediapicker.utils.ARG_PARAM_AV_MEDIA
 import com.avcoding.avmediapicker.utils.AvMediaEventCallback
@@ -21,6 +28,8 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 class AvMediaPickerFragment(private val resultCallback: ((AvMediaEventCallback.Results) -> Unit)? = null) :
     Fragment(), View.OnClickListener, TabLayout.OnTabSelectedListener {
@@ -31,6 +40,7 @@ class AvMediaPickerFragment(private val resultCallback: ((AvMediaEventCallback.R
 
     private lateinit var vpAdapter: MediaSelectionViewPager
 
+    val vm : MediaViewModel by activityViewModels()
 
     private var permReqLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
@@ -60,6 +70,24 @@ class AvMediaPickerFragment(private val resultCallback: ((AvMediaEventCallback.R
         super.onViewCreated(view, savedInstanceState)
         permissions()
         setUpClicks()
+        setUpObservers()
+    }
+
+    private fun setUpObservers() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED){
+                vm._flow.collect{
+                    when(it){
+                        is MediaViewModel.Event.OnItemSelected -> {
+                            Log.e("setUpObservers", "${it.data.size}")
+                        }
+                        is MediaViewModel.Event.OnTotalItemSelected ->{
+                            Log.e("setUpObservers", "${it.count}")
+                        }
+                    }
+                }
+            }
+        }
     }
 
 

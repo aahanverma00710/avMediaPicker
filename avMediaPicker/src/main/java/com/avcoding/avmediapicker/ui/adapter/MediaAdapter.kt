@@ -3,13 +3,16 @@ package com.avcoding.avmediapicker.ui.adapter
 import android.content.Context
 import android.net.Uri
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.avcoding.avmediapicker.R
 import com.avcoding.avmediapicker.databinding.AdapterDateHeaderBinding
 import com.avcoding.avmediapicker.databinding.AdapterMediaBinding
 import com.avcoding.avmediapicker.model.Img
+import com.avcoding.avmediapicker.model.MediaSelectionOptions
 import com.avcoding.avmediapicker.utils.MediaDiffUtils
 import com.avcoding.avmediapicker.utils.WIDTH
 import com.avcoding.avmediapicker.utils.hide
@@ -22,7 +25,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.util.FixedPreloadSizeProvider
 
-class MediaAdapter(private val context: Context) :
+class MediaAdapter(private val context: Context, private val mediaOptions: MediaSelectionOptions,val callback:(Img) ->Unit) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
@@ -94,11 +97,11 @@ class MediaAdapter(private val context: Context) :
     }
 
     inner class ItemViewHolder(private val mainImageBinding: AdapterMediaBinding) :
-        RecyclerView.ViewHolder(mainImageBinding.root) {
+        RecyclerView.ViewHolder(mainImageBinding.root), View.OnClickListener {
         fun bind(image: Img) {
-            // mainImageBinding.root.setOnClickListener(this)
+             mainImageBinding.root.setOnClickListener(this)
             // mainImageBinding.root.setOnLongClickListener(this)
-          //  mainImageBinding.mcvPreview.layoutParams = layoutParams
+            //  mainImageBinding.mcvPreview.layoutParams = layoutParams
             try {
                 glide.asBitmap()
                     .load(image.contentUrl)
@@ -112,6 +115,24 @@ class MediaAdapter(private val context: Context) :
             } catch (e: Exception) {
                 e.printStackTrace()
             }
+            val isMultiSelection = mediaOptions.selectionCount > 1
+            if (isMultiSelection) {
+                mainImageBinding.ivSelection.show()
+            } else {
+                mainImageBinding.ivSelection.hide()
+            }
+
+            if (image.selected){
+                mainImageBinding.ivSelection.setImageResource(R.drawable.baseline_check_circle_24)
+            }else{
+                mainImageBinding.ivSelection.setImageResource(R.drawable.baseline_radio_button_unchecked_24)
+            }
+        }
+
+        override fun onClick(p0: View?) {
+            val position = this.layoutPosition
+            val data = oldList[position]
+            callback.invoke(data)
         }
     }
 
@@ -119,6 +140,7 @@ class MediaAdapter(private val context: Context) :
         RecyclerView.ViewHolder(headerRowBinding.root) {
         fun bind(img: Img) {
             headerRowBinding.tvDate.text = img.headerDate
+
         }
 
     }

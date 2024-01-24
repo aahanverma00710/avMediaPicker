@@ -12,6 +12,7 @@ import android.view.View
 import android.view.WindowManager
 import androidx.core.view.WindowCompat
 import com.avcoding.avmediapicker.R
+import com.avcoding.avmediapicker.model.Img
 import com.avcoding.avmediapicker.model.MediaMode
 import com.google.android.material.tabs.TabLayout
 import java.text.SimpleDateFormat
@@ -131,4 +132,20 @@ fun Activity.getScreenSize() {
             windowManager.defaultDisplay.getMetrics(this)
         }
     }.widthPixels
+}
+
+fun Int.getMediaMode(): MediaMode {
+    return if (this == 0) {
+        MediaMode.Picture
+    } else {
+        MediaMode.Video
+    }
+}
+
+fun ArrayList<Img>.updateFlaggedStatus(index: Int, newFlagStatus: Boolean) {
+    if (index in 0 until size) {
+        get(index).selected = newFlagStatus
+    } else {
+        throw IndexOutOfBoundsException("Index $index is out of bounds for ArrayList of size $size")
+    }
 }

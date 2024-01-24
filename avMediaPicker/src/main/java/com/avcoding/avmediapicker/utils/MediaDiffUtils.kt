@@ -16,10 +16,10 @@ class MediaDiffUtils constructor(
     }
 
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        return oldList[oldItemPosition].position == newList[newItemPosition].position
+        return oldList[oldItemPosition].selected == newList[newItemPosition].selected
     }
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        return oldList[oldItemPosition].toString() == newList[newItemPosition].toString()
+        return oldList[oldItemPosition] == newList[newItemPosition]
     }
 }

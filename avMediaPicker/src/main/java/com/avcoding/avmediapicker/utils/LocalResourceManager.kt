@@ -37,7 +37,7 @@ internal class LocalResourceManager(
     var preSelectedUrls: List<Uri> = ArrayList()
     fun retrieveMedia(
         start: Int = 0,
-        limit: Int = 500,
+        limit: Int = 0,
         mode: MediaMode = MediaMode.All
     ): ModelList {
         val cursor = context.getImageVideoCursor(mode)

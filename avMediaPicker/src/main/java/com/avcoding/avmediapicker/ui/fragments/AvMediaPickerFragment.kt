@@ -17,13 +17,13 @@ import com.avcoding.avmediapicker.utils.hide
 import com.avcoding.avmediapicker.utils.parcelable
 import com.avcoding.avmediapicker.utils.setupScreen
 import com.avcoding.avmediapicker.utils.show
+import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
 
 class AvMediaPickerFragment(private val resultCallback: ((AvMediaEventCallback.Results) -> Unit)? = null) :
-    Fragment(), View.OnClickListener {
+    Fragment(), View.OnClickListener, TabLayout.OnTabSelectedListener {
 
     private lateinit var _binding: FragmentAvMediaPickerBinding
 
@@ -31,6 +31,7 @@ class AvMediaPickerFragment(private val resultCallback: ((AvMediaEventCallback.R
 
     private lateinit var vpAdapter: MediaSelectionViewPager
 
+    private var scope = CoroutineScope(Dispatchers.IO)
 
     private var permReqLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
@@ -45,9 +46,6 @@ class AvMediaPickerFragment(private val resultCallback: ((AvMediaEventCallback.R
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         options = arguments?.parcelable(ARG_PARAM_AV_MEDIA) ?: MediaSelectionOptions()
-        requireActivity().let {
-            it.setupScreen()
-        }
     }
 
     override fun onCreateView(
@@ -110,7 +108,22 @@ class AvMediaPickerFragment(private val resultCallback: ((AvMediaEventCallback.R
         }else{
             _binding.lAllPermissionGranted.tabLayout.hide()
         }
+        _binding.lAllPermissionGranted.tabLayout.addOnTabSelectedListener(this@AvMediaPickerFragment)
+    }
 
+    override fun onTabSelected(tab: TabLayout.Tab?) {
+        if (tab?.position == 0){
+            _binding.lAllPermissionGranted.vpItems.setCurrentItem(0,true)
+        }else{
+            _binding.lAllPermissionGranted.vpItems.setCurrentItem(1,true)
+        }
+    }
+
+    override fun onTabUnselected(tab: TabLayout.Tab?) {
+
+    }
+
+    override fun onTabReselected(tab: TabLayout.Tab?) {
     }
 
 }

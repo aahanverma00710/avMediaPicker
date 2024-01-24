@@ -1,10 +1,13 @@
 package com.avcoding.avmediapicker.ui.adapter
 
 import android.content.Context
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.avcoding.avmediapicker.databinding.AdapterDateHeaderBinding
 import com.avcoding.avmediapicker.databinding.AdapterMediaBinding
 import com.avcoding.avmediapicker.model.Img
 import com.avcoding.avmediapicker.utils.MediaDiffUtils
@@ -20,15 +23,24 @@ import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.util.FixedPreloadSizeProvider
 
 class MediaAdapter(private val context: Context) :
-    RecyclerView.Adapter<MediaAdapter.ItemViewHolder>() {
+    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    companion object {
+        const val HEADER = 1
+        const val ITEM = 2
+    }
 
     private val glide: RequestManager
     private val options: RequestOptions
     private var sizeProvider: ListPreloader.PreloadSizeProvider<Img>
     private val MARGIN = 4
 
+    private val layoutParams: FrameLayout.LayoutParams
+
     init {
         val size: Int = WIDTH / 3 - MARGIN / 2
+        layoutParams = FrameLayout.LayoutParams(size, size)
+        layoutParams.setMargins(MARGIN, MARGIN - MARGIN / 2, MARGIN, MARGIN - MARGIN / 2)
         options = RequestOptions().override(size - 50)
             .format(DecodeFormat.PREFER_RGB_565)
             .centerCrop()
@@ -40,22 +52,39 @@ class MediaAdapter(private val context: Context) :
     var oldList = arrayListOf<Img>()
 
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
-        val view = AdapterMediaBinding.inflate(layoutInflater, parent, false)
-        return ItemViewHolder(view)
+        return if (viewType == HEADER) {
+            val view = AdapterDateHeaderBinding.inflate(layoutInflater, parent, false)
+            DateViewHolder(view)
+        } else {
+            val view = AdapterMediaBinding.inflate(layoutInflater, parent, false)
+            ItemViewHolder(view)
+        }
     }
 
     override fun getItemCount(): Int {
         return oldList.size
     }
 
-    override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-        holder.bind(oldList[position])
+    override fun getItemViewType(position: Int): Int {
+        if (oldList.size <= position) {
+            return 0
+        }
+        val i = oldList[position]
+        return if (i.contentUrl == Uri.EMPTY) HEADER else ITEM
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        if (holder is ItemViewHolder) {
+            holder.bind(oldList[position])
+        } else if (holder is DateViewHolder) {
+            holder.bind(oldList[position])
+        }
     }
 
 
-    fun updateList(newList : ArrayList<Img>){
+    fun updateList(newList: ArrayList<Img>) {
         val diffResult = DiffUtil.calculateDiff(
             MediaDiffUtils(oldList, newList),
             true
@@ -63,11 +92,13 @@ class MediaAdapter(private val context: Context) :
         oldList = ArrayList(newList)
         diffResult.dispatchUpdatesTo(this)
     }
+
     inner class ItemViewHolder(private val mainImageBinding: AdapterMediaBinding) :
         RecyclerView.ViewHolder(mainImageBinding.root) {
         fun bind(image: Img) {
-           // mainImageBinding.root.setOnClickListener(this)
-           // mainImageBinding.root.setOnLongClickListener(this)
+            // mainImageBinding.root.setOnClickListener(this)
+            // mainImageBinding.root.setOnLongClickListener(this)
+          //  mainImageBinding.mcvPreview.layoutParams = layoutParams
             try {
                 glide.asBitmap()
                     .load(image.contentUrl)
@@ -78,9 +109,17 @@ class MediaAdapter(private val context: Context) :
                 } else if (image.mediaType == 3) {
                     mainImageBinding.ivIsVideo.show()
                 }
-            }catch (e:Exception){
+            } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
+    }
+
+    inner class DateViewHolder(private val headerRowBinding: AdapterDateHeaderBinding) :
+        RecyclerView.ViewHolder(headerRowBinding.root) {
+        fun bind(img: Img) {
+            headerRowBinding.tvDate.text = img.headerDate
+        }
+
     }
 }

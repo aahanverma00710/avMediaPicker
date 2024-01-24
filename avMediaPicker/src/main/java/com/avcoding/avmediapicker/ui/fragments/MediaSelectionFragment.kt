@@ -1,14 +1,20 @@
 package com.avcoding.avmediapicker.ui.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
+import androidx.recyclerview.widget.RecyclerView
 import com.avcoding.avmediapicker.databinding.FragmentMediaSelectionBinding
+import com.avcoding.avmediapicker.model.MediaMode
 import com.avcoding.avmediapicker.model.MediaSelectionOptions
 import com.avcoding.avmediapicker.ui.adapter.MediaAdapter
 import com.avcoding.avmediapicker.utils.ARG_PARAM_AV_MEDIA
+import com.avcoding.avmediapicker.utils.ARG_PARAM_AV_MEDIA_KEY
 import com.avcoding.avmediapicker.utils.LocalResourceManager
 import com.avcoding.avmediapicker.utils.parcelable
 import kotlinx.coroutines.CoroutineScope
@@ -16,6 +22,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+
 
 class MediaSelectionFragment : Fragment() {
 
@@ -27,11 +34,13 @@ class MediaSelectionFragment : Fragment() {
 
     private var scope = CoroutineScope(Dispatchers.IO)
 
+    private var mode = 0
     companion object {
-        fun getInstance(options: MediaSelectionOptions): MediaSelectionFragment {
+        fun getInstance(options: MediaSelectionOptions, position: Int): MediaSelectionFragment {
             val fragment = MediaSelectionFragment()
             val args = Bundle()
             args.putParcelable(ARG_PARAM_AV_MEDIA, options)
+            args.putInt(ARG_PARAM_AV_MEDIA_KEY,position)
             fragment.arguments = args
             return fragment
         }
@@ -40,6 +49,7 @@ class MediaSelectionFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         options = arguments?.parcelable(ARG_PARAM_AV_MEDIA) ?: MediaSelectionOptions()
+        mode = arguments?.getInt(ARG_PARAM_AV_MEDIA_KEY) ?: 0
     }
 
     override fun onCreateView(
@@ -66,7 +76,7 @@ class MediaSelectionFragment : Fragment() {
             val localResourceManager = LocalResourceManager(requireContext()).apply {
                 this.preSelectedUrls = options.preSelectedUrls
             }
-            val media = localResourceManager.retrieveMedia()
+            val media = localResourceManager.retrieveMedia(mode =  getMediaMode(mode))
             if (::mediaAdapter.isInitialized) {
                 requireActivity().runOnUiThread {
                     mediaAdapter.updateList(media.list)
@@ -78,6 +88,26 @@ class MediaSelectionFragment : Fragment() {
 
     private fun setUpAdapter() {
         mediaAdapter = MediaAdapter(requireActivity())
+        val mLayoutManager = GridLayoutManager(requireActivity(), 3)
+        mLayoutManager.orientation =  RecyclerView.VERTICAL
+        mLayoutManager.spanSizeLookup = object : SpanSizeLookup() {
+            override fun getSpanSize(position: Int): Int {
+                Log.e("getSpanSize","${mediaAdapter.getItemViewType(position)}")
+                return when (mediaAdapter.getItemViewType(position)) {
+                    MediaAdapter.HEADER -> 3
+                    else -> 1
+                }
+            }
+        }
+        _binding.rvMediaSelection.layoutManager = mLayoutManager
         _binding.rvMediaSelection.adapter = mediaAdapter
+    }
+
+    fun getMediaMode(mode:Int): MediaMode{
+        return if (mode  == 0){
+            MediaMode.Picture
+        }else{
+            MediaMode.Video
+        }
     }
 }

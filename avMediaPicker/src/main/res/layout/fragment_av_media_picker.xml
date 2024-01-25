@@ -1,16 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<LinearLayout android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/clRoot"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <include
-        android:id="@+id/lNoPermission"
-        layout="@layout/layout_no_permission_granted"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-    <include
-        android:id="@+id/lAllPermissionGranted"
-        layout="@layout/layout_av_media"/>
+        <ImageView
+            android:id="@+id/ivBack"
+            android:src="@drawable/baseline_arrow_back_ios_24"
+            android:layout_width="45dp"
+            android:padding="10sp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="5sp"
+            android:layout_height="45dp" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:id="@+id/tvHeading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Select Media"
+            android:layout_toEndOf="@+id/ivBack"
+            android:layout_centerVertical="true"
+            android:padding="5sp"
+            android:textSize="16dp" />
+
+        <Button
+            android:id="@+id/btnSelectionCount"
+            android:layout_alignParentEnd="true"
+            android:layout_marginVertical="2sp"
+            tools:text="selected (1)"
+            android:padding="6sp"
+            android:visibility="gone"
+            tools:visibility="visible"
+            android:textSize="10sp"
+            android:background="@drawable/button_allow_bg"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="8sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+
+
+    </RelativeLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <include
+            android:id="@+id/lNoPermission"
+            layout="@layout/layout_no_permission_granted"/>
+
+        <include
+            android:id="@+id/lAllPermissionGranted"
+            layout="@layout/layout_av_media"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</LinearLayout>

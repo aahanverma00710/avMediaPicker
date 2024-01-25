@@ -25,7 +25,9 @@ import com.avcoding.avmediapicker.utils.ARG_PARAM_AV_MEDIA
 import com.avcoding.avmediapicker.utils.ARG_PARAM_AV_MEDIA_KEY
 import com.avcoding.avmediapicker.utils.LocalResourceManager
 import com.avcoding.avmediapicker.utils.getMediaMode
+import com.avcoding.avmediapicker.utils.hide
 import com.avcoding.avmediapicker.utils.parcelable
+import com.avcoding.avmediapicker.utils.show
 import com.avcoding.avmediapicker.utils.updateFlaggedStatus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -119,6 +121,13 @@ class MediaSelectionFragment : Fragment() {
                 requireActivity().runOnUiThread {
                     mediaList.addAll(media.list)
                     mediaAdapter.updateList(mediaList, -1)
+                    if (mediaList.isNotEmpty()) {
+                        _binding.rvMediaSelection.show()
+                        _binding.lavNoData.hide()
+                    } else {
+                        _binding.rvMediaSelection.hide()
+                        _binding.lavNoData.show()
+                    }
                 }
 
             }
@@ -138,9 +147,9 @@ class MediaSelectionFragment : Fragment() {
             }
             mediaList.updateFlaggedStatus(callback.position, !isForSelection)
             mediaAdapter.updateList(mediaList, callback.position)
-            if (isForSelection){
+            if (isForSelection) {
                 vm.removeItem(callback)
-            }else{
+            } else {
                 vm.updateList(callback)
             }
 

@@ -71,6 +71,7 @@ class AvMediaPickerFragment(private val resultCallback: ((AvMediaEventCallback.R
         permissions()
         setUpClicks()
         setUpObservers()
+
     }
 
     private fun setUpObservers() {
@@ -80,6 +81,16 @@ class AvMediaPickerFragment(private val resultCallback: ((AvMediaEventCallback.R
                     when(it){
                         is MediaViewModel.Event.OnItemSelected -> {
                             Log.e("setUpObservers", "${it.data.size}")
+                            if (options.selectionCount == 1){
+                                handleSuccess()
+                            }else{
+                                if (it.data.isEmpty()){
+                                    _binding.btnSelectionCount.hide()
+                                }else{
+                                    _binding.btnSelectionCount.show()
+                                    _binding.btnSelectionCount.text = "Selected (${it.data.size})"
+                                }
+                            }
                         }
                         is MediaViewModel.Event.OnTotalItemSelected ->{
                             Log.e("setUpObservers", "${it.count}")
@@ -99,6 +110,8 @@ class AvMediaPickerFragment(private val resultCallback: ((AvMediaEventCallback.R
 
     private fun setUpClicks() {
         _binding.lNoPermission.btnAllow.setOnClickListener(this@AvMediaPickerFragment)
+        _binding.ivBack.setOnClickListener(this@AvMediaPickerFragment)
+        _binding.btnSelectionCount.setOnClickListener(this@AvMediaPickerFragment)
     }
 
     private fun setUpUI() {
@@ -110,9 +123,19 @@ class AvMediaPickerFragment(private val resultCallback: ((AvMediaEventCallback.R
             _binding.lNoPermission.btnAllow -> {
                 permissions()
             }
+            _binding.ivBack ->{
+                resultCallback?.invoke(AvMediaEventCallback.Results(status = AvMediaEventCallback.Status.BACK_PRESSED))
+            }
+            _binding.btnSelectionCount ->{
+                handleSuccess()
+            }
         }
     }
 
+    private fun handleSuccess() {
+        val selectionList = vm.getSelectedMediaList()
+        resultCallback?.invoke(AvMediaEventCallback.Results(data = selectionList, status = AvMediaEventCallback.Status.SUCCESS))
+    }
 
 
     private fun setUpViewPager() {

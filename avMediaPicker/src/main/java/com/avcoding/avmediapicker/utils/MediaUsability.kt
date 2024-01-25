@@ -72,5 +72,5 @@ fun AppCompatActivity.selectMedia(
             arguments = Bundle().apply {
                 putParcelable(ARG_PARAM_AV_MEDIA, options)
             }
-        }).commit()
+        }).addToBackStack(AvMediaPickerFragment::class.java.name).commit()
 }

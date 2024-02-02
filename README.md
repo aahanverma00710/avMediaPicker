@@ -42,3 +42,10 @@
                   }
               }
 ```
+
+## Updates
+
+### Update V1.1.0
+
+- Added documentation for the latest changes.
+- Check out the [Release Notes](https://github.com/aahanverma00710/avMediaPicker/releases/tag/v1.1.0) for more details.

@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -17,7 +16,6 @@ import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import androidx.recyclerview.widget.RecyclerView
 import com.avcoding.avmediapicker.databinding.FragmentMediaSelectionBinding
 import com.avcoding.avmediapicker.model.Img
-import com.avcoding.avmediapicker.model.MediaMode
 import com.avcoding.avmediapicker.model.MediaSelectionOptions
 import com.avcoding.avmediapicker.ui.MediaViewModel
 import com.avcoding.avmediapicker.ui.adapter.MediaAdapter
@@ -32,8 +30,6 @@ import com.avcoding.avmediapicker.utils.updateFlaggedStatus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
@@ -113,7 +109,7 @@ class MediaSelectionFragment : Fragment() {
         }
         scope = CoroutineScope(Dispatchers.IO)
         scope.launch {
-            val localResourceManager = LocalResourceManager(requireContext()).apply {
+            val localResourceManager = LocalResourceManager(requireContext(),options).apply {
                 this.preSelectedUrls = options.preSelectedUrls
             }
             val media = localResourceManager.retrieveMedia(mode = mode.getMediaMode())
@@ -124,9 +120,11 @@ class MediaSelectionFragment : Fragment() {
                     if (mediaList.isNotEmpty()) {
                         _binding.rvMediaSelection.show()
                         _binding.lavNoData.hide()
+                        _binding.lavLoading.hide()
                     } else {
                         _binding.rvMediaSelection.hide()
                         _binding.lavNoData.show()
+                        _binding.lavLoading.hide()
                     }
                 }
 

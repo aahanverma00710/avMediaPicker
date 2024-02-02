@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -24,6 +25,8 @@ import com.avcoding.avmediapicker.utils.hide
 import com.avcoding.avmediapicker.utils.parcelable
 import com.avcoding.avmediapicker.utils.setupScreen
 import com.avcoding.avmediapicker.utils.show
+import com.avcoding.avmediapicker.utils.slideDownAndHide
+import com.avcoding.avmediapicker.utils.slideUpAndShow
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.CoroutineScope
@@ -68,10 +71,16 @@ class AvMediaPickerFragment(private val resultCallback: ((AvMediaEventCallback.R
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setUpToolbar()
         permissions()
         setUpClicks()
         setUpObservers()
 
+    }
+
+    private fun setUpToolbar() {
+        _binding.rlToolbar.isVisible = options.customSelectionOption.showToolbar
+        _binding.ivBack.setImageResource(options.customSelectionOption.toolbarBackIcon)
     }
 
     private fun setUpObservers() {
@@ -85,10 +94,10 @@ class AvMediaPickerFragment(private val resultCallback: ((AvMediaEventCallback.R
                                 handleSuccess()
                             }else{
                                 if (it.data.isEmpty()){
-                                    _binding.btnSelectionCount.hide()
+                                    _binding.btnSelectionCount.slideDownAndHide(100)
                                 }else{
-                                    _binding.btnSelectionCount.show()
-                                    _binding.btnSelectionCount.text = "Selected (${it.data.size})"
+                                    _binding.btnSelectionCount.slideUpAndShow(100)
+                                    _binding.btnSelectionCount.text = "${it.data.size}"
                                 }
                             }
                         }

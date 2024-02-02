@@ -107,12 +107,17 @@ class MediaAdapter(
 
     inner class ItemViewHolder(private val mainImageBinding: AdapterMediaBinding) :
         RecyclerView.ViewHolder(mainImageBinding.root), View.OnClickListener {
+        init {
+            mainImageBinding.ivIsVideo.setImageResource(mediaOptions.customSelectionOption.videoIcon)
+        }
+
         fun bind(image: Img) {
             mainImageBinding.root.setOnClickListener(this)
             // mainImageBinding.root.setOnLongClickListener(this)
             //  mainImageBinding.mcvPreview.layoutParams = layoutParams
             try {
                 glide.asBitmap()
+                    .placeholder(mediaOptions.customSelectionOption.placeHolder)
                     .load(image.contentUrl)
                     .apply(options)
                     .into(mainImageBinding.ivImage)
@@ -130,11 +135,12 @@ class MediaAdapter(
             } else {
                 mainImageBinding.ivSelection.hide()
             }
+            val selectionOptions = mediaOptions.customSelectionOption
 
             if (image.selected) {
-                mainImageBinding.ivSelection.setImageResource(R.drawable.baseline_check_circle_24)
+                mainImageBinding.ivSelection.setImageResource(selectionOptions.selectedImageIcon)
             } else {
-                mainImageBinding.ivSelection.setImageResource(R.drawable.baseline_radio_button_unchecked_24)
+                mainImageBinding.ivSelection.setImageResource(selectionOptions.unSelectedImageIcon)
             }
         }
 

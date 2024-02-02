@@ -1,5 +1,7 @@
 package com.avcoding.avmediapicker.utils
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.app.Activity
 import android.content.Intent
 import android.content.res.Resources
@@ -9,7 +11,10 @@ import android.os.Parcelable
 import android.provider.MediaStore
 import android.util.DisplayMetrics
 import android.view.View
+import android.view.ViewTreeObserver
 import android.view.WindowManager
+import android.view.animation.AccelerateInterpolator
+import androidx.core.animation.doOnEnd
 import androidx.core.view.WindowCompat
 import com.avcoding.avmediapicker.R
 import com.avcoding.avmediapicker.model.Img
@@ -59,7 +64,53 @@ fun View.show() {
 fun View.invisible() {
     visibility = View.INVISIBLE
 }
+fun View.slideUpAndShow(duration: Long = 500) {
+    if (visibility != View.VISIBLE) {
+        visibility = View.VISIBLE
 
+        val alphaAnimator = ObjectAnimator.ofFloat(this, "alpha", 0f, 1f)
+        val translationYAnimator = ObjectAnimator.ofFloat(this, "translationY", this.height.toFloat(), 0f)
+
+        val animatorSet = AnimatorSet()
+        animatorSet.playTogether(alphaAnimator, translationYAnimator)
+        animatorSet.duration = duration
+        animatorSet.interpolator = AccelerateInterpolator()
+
+        // Delay the start until the view is properly laid out
+        viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
+            override fun onPreDraw(): Boolean {
+                viewTreeObserver.removeOnPreDrawListener(this)
+                animatorSet.start()
+                return true
+            }
+        })
+    }
+}
+
+fun View.slideDownAndHide(duration: Long = 500) {
+    if (visibility == View.VISIBLE) {
+        val alphaAnimator = ObjectAnimator.ofFloat(this, "alpha", 1f, 0f)
+        val translationYAnimator = ObjectAnimator.ofFloat(this, "translationY", 0f, this.height.toFloat())
+
+        val animatorSet = AnimatorSet()
+        animatorSet.playTogether(alphaAnimator, translationYAnimator)
+        animatorSet.duration = duration
+        animatorSet.interpolator = AccelerateInterpolator()
+
+        // Delay the start until the view is properly laid out
+        viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
+            override fun onPreDraw(): Boolean {
+                viewTreeObserver.removeOnPreDrawListener(this)
+                animatorSet.start()
+                return true
+            }
+        })
+
+        animatorSet.doOnEnd {
+            visibility = View.GONE
+        }
+    }
+}
 inline fun <reified T : Parcelable> Intent.parcelable(key: String): T? = when {
     Build.VERSION.SDK_INT >= 33 -> getParcelableExtra(key, T::class.java)
     else -> @Suppress("DEPRECATION") getParcelableExtra(key) as? T

@@ -1,14 +1,36 @@
 package com.avcoding.avmediapicker.utils
 
+import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.Context
+import android.database.Cursor
 import android.net.Uri
-import android.os.Build
 import android.provider.DocumentsContract
 import android.provider.MediaStore
-import android.util.Log
-import androidx.annotation.RequiresApi
-import java.io.File
+
+fun Uri.getMediaDuration(context: Context): Long {
+    val contentResolver: ContentResolver = context.contentResolver
+
+    // Projection for the columns to retrieve
+    val projection = arrayOf(MediaStore.Files.FileColumns.DURATION)
+
+    // Perform the query
+    var duration  = 0L
+    val cursor: Cursor? = contentResolver.query(this, projection, null, null, null)
+
+    cursor?.use {
+        if (it.moveToFirst()) {
+            // Get the duration column index
+            val durationIndex = it.getColumnIndex(MediaStore.Files.FileColumns.DURATION)
+
+            // Retrieve the duration value
+            duration = it.getLong(durationIndex)
+        }
+    }
+
+    return duration / 1000
+}
+
 
 fun Uri.getPathFromUri(context: Context): String? {
     val uri  = this

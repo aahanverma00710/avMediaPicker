@@ -7,6 +7,7 @@ import android.provider.MediaStore
 import android.util.Log
 import com.avcoding.avmediapicker.model.Img
 import com.avcoding.avmediapicker.model.MediaMode
+import com.avcoding.avmediapicker.model.MediaSelectionOptions
 import com.avcoding.avmediapicker.model.ModelList
 import java.util.*
 import kotlin.collections.ArrayList
@@ -26,7 +27,8 @@ fun Context.getImageVideoCursor(mode: MediaMode): Cursor? {
 }
 
 internal class LocalResourceManager(
-    private val context: Context
+    private val context: Context,
+    private val options: MediaSelectionOptions
 ) {
     private val className = LocalResourceManager::class.java.simpleName
 
@@ -86,38 +88,50 @@ internal class LocalResourceManager(
                                 Log.e(TAG, "$className Exception ${ex.message}")
                                 Uri.EMPTY
                             }
-
-                            val dateDifference =
-                                context.resources.getDateDifference(
-                                    Calendar.getInstance()
-                                        .apply { timeInMillis = cursor.getLong(imageDate) * 1000 })
-                            val mediaType = cursor.getInt(mediaTypeColumnId)
-                            if (!header.equals("" + dateDifference, ignoreCase = true)) {
-                                header = "" + dateDifference
-                                pos += 1
-                                list.add(
-                                    Img(
-                                        headerDate = "" + dateDifference,
-                                        mediaType = mediaType
-                                    )
-                                )
-                            }
-                            Img(
-                                headerDate = header,
-                                contentUrl = path,
-                                scrollerDate = pos.toString(),
-                                mediaType = mediaType
-                            ).apply {
-                                this.position = pos
-                            }.also {
-                                if (preSelectedUrls.contains(it.contentUrl)) {
-                                    it.selected = true
-                                    selectionList.add(it)
+                            var canAddThisMedia = true
+                            if (mode == MediaMode.Video){
+                                val duration  = path.getMediaDuration(context)
+                                val allowedDuration = options.videoOptions.videoDurationLimitInSeconds
+                                if (duration >= allowedDuration){
+                                    canAddThisMedia = false
                                 }
-                                pos += 1
-                                list.add(it)
                             }
 
+                            if (canAddThisMedia) {
+                                val dateDifference =
+                                    context.resources.getDateDifference(
+                                        Calendar.getInstance()
+                                            .apply {
+                                                timeInMillis = cursor.getLong(imageDate) * 1000
+                                            })
+                                val mediaType = cursor.getInt(mediaTypeColumnId)
+                                if (!header.equals("" + dateDifference, ignoreCase = true)) {
+                                    header = "" + dateDifference
+                                    pos += 1
+                                    list.add(
+                                        Img(
+                                            headerDate = "" + dateDifference,
+                                            mediaType = mediaType
+                                        )
+                                    )
+                                }
+                                Img(
+                                    headerDate = header,
+                                    contentUrl = path,
+                                    scrollerDate = pos.toString(),
+                                    mediaType = mediaType
+                                ).apply {
+                                    this.position = pos
+                                }.also {
+                                    if (preSelectedUrls.contains(it.contentUrl)) {
+                                        it.selected = true
+                                        selectionList.add(it)
+                                    }
+                                    pos += 1
+                                    list.add(it)
+                                }
+
+                            }
                         } catch (ex: java.lang.Exception) {
                             ex.printStackTrace()
                             Log.e(TAG, "$className Exception ${ex.message}")

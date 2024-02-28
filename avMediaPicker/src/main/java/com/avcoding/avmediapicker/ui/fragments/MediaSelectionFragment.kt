@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import androidx.recyclerview.widget.RecyclerView
 import com.avcoding.avmediapicker.databinding.FragmentMediaSelectionBinding
 import com.avcoding.avmediapicker.model.Img
+import com.avcoding.avmediapicker.model.MediaMode
 import com.avcoding.avmediapicker.model.MediaSelectionOptions
 import com.avcoding.avmediapicker.ui.MediaViewModel
 import com.avcoding.avmediapicker.ui.adapter.MediaAdapter
@@ -66,7 +67,15 @@ class MediaSelectionFragment : Fragment() {
         super.onCreate(savedInstanceState)
         mediaList.clear()
         options = arguments?.parcelable(ARG_PARAM_AV_MEDIA) ?: MediaSelectionOptions()
-        mode = arguments?.getInt(ARG_PARAM_AV_MEDIA_KEY) ?: 0
+        mode = if (options.mediaMode == MediaMode.All) {
+            arguments?.getInt(ARG_PARAM_AV_MEDIA_KEY) ?: 0
+        }else{
+            if (options.mediaMode == MediaMode.Video){
+                1
+            }else{
+                0
+            }
+        }
     }
 
     override fun onCreateView(

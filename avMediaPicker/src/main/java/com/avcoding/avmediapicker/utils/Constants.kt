@@ -158,7 +158,7 @@ fun Resources.getDateDifference(calendar: Calendar): String {
     val lastWeek = Calendar.getInstance().apply { add(Calendar.DAY_OF_MONTH, -7) }
     val recent = Calendar.getInstance().apply { add(Calendar.DAY_OF_MONTH, -2) }
     return when {
-        calendar.before(lastMonth) -> SimpleDateFormat("MMMM", Locale.getDefault()).format(d)
+        calendar.before(lastMonth) -> SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()).format(d)
         calendar.after(lastMonth) && calendar.before(lastWeek) -> "Last Month"
         calendar.after(lastWeek) && calendar.before(recent) -> "Last Week"
         else -> "Recent"

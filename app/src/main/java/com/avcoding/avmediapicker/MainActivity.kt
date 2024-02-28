@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
-import com.avcoding.avmediapicker.model.MediaMode
 import com.avcoding.avmediapicker.model.MediaSelectionOptions
 import com.avcoding.avmediapicker.utils.AvMediaEventCallback
 import com.avcoding.avmediapicker.utils.selectMedia
@@ -14,7 +13,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val options =  MediaSelectionOptions(selectionCount =  2, mediaMode = MediaMode.Video)
+        val options =  MediaSelectionOptions(selectionCount =  2)
         selectMedia(R.id.tv,options){
             when(it.status){
                 AvMediaEventCallback.Status.SUCCESS ->{
